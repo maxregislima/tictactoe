@@ -7,12 +7,17 @@ import PlayersNamePage from "./pages/PlayersNamePage";
 
 // 0. welcome
 // 1. perguntar se vai jogar com outro jogador ou contra o computador
-// 2. pedir nome(s)
-// 3. iniciar (Area)
-// 4. finalizar o jogo
+// FIXME: 2. pedir nome(s)
+// FIXME: 3. iniciar (Area)
+// TODO: 4. finalizar o jogo
 
 function App() {
   const [showPage, setShowPage] = React.useState("Welcome");
+  const [playingMode, setPlayingMode] = React.useState('twoPlayers');
+  const [players, SetPlayers] = React.useState({
+    player1: null,
+    player2: null,
+  });
 
   return (
     <div className="App">
@@ -20,11 +25,11 @@ function App() {
         {showPage === "Welcome" ? (
           <WelcomePage setShowPage={setShowPage} />
         ) : showPage === "WhoIsGoingToPlay" ? (
-          <WhoIsGoingToPlayPage setShowPage={setShowPage}/>
+          <WhoIsGoingToPlayPage setShowPage={setShowPage} playingMode={playingMode} setPlayingMode={setPlayingMode}/>
         ) : showPage === "PlayersName" ? (
-          <PlayersNamePage setShowPage={setShowPage}/>
+          <PlayersNamePage setShowPage={setShowPage} playingMode={playingMode} players={players} SetPlayers={SetPlayers}/>
         ) : (
-          <Area />
+          <Area setShowPage={setShowPage} players={players}/>
         )}
       </div>
     </div>

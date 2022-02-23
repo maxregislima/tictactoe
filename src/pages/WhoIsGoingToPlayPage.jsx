@@ -9,8 +9,12 @@ import {
   Typography,
 } from "@mui/material";
 
-function WhoIsGoingToPlayPage({ setShowPage }) {
-  const [option, setOption] = React.useState(null);
+function WhoIsGoingToPlayPage({ setShowPage, playingMode, setPlayingMode }) {
+  const [option, setOption] = React.useState(playingMode);
+
+  React.useEffect(() => {
+    setPlayingMode(option)
+  }, [setPlayingMode, option])
 
   return (
     <Paper
@@ -37,6 +41,7 @@ function WhoIsGoingToPlayPage({ setShowPage }) {
           onChange={(el) => {
             setOption(el.currentTarget.value);
           }}
+          value={option}
           style={{
             display: "flex",
             flexDirection: "column",
@@ -60,6 +65,7 @@ function WhoIsGoingToPlayPage({ setShowPage }) {
           variant="contained"
           size="large"
           onClick={() => setShowPage("PlayersName")}
+          disabled={option === null}
         >
           {option === "onePlayer" ? `Good luck!` : `Continue`}
         </Button>

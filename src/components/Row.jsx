@@ -1,6 +1,7 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
 import Button from "@mui/material/Button";
+import { red, indigo } from "@mui/material/colors";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 
@@ -30,7 +31,7 @@ export default function Row({ player, nextPlayer, line, play, status }) {
   //  line === 2
   //  6, 7, 8
 
-  let matrix = [0, 1, 2]
+  let matrix = [0, 1, 2];
   // if (line === 0) {
   //   matrix = [0, 1, 2];
   // } else if (line === 1) {
@@ -53,6 +54,14 @@ export default function Row({ player, nextPlayer, line, play, status }) {
               height: 100,
               width: 100,
             }}
+            style={{
+              borderColor:
+                labelList[ix] === "x"
+                  ? indigo[500]
+                  : labelList[ix] === "o"
+                  ? red[500]
+                  : "initial",
+            }}
             variant="outlined"
             onClick={() => handleClick(ix)}
             // onClick={() => handleClick(value, ix)}
@@ -60,9 +69,9 @@ export default function Row({ player, nextPlayer, line, play, status }) {
           >
             {labelList[ix] !== null ? (
               labelList[ix] === "x" ? (
-                <CloseOutlinedIcon />
+                <CloseOutlinedIcon style={{ color: indigo[900] }} />
               ) : (
-                <CircleOutlinedIcon />
+                <CircleOutlinedIcon style={{ color: red[900] }} />
               )
             ) : null}
           </Button>

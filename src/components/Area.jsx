@@ -1,15 +1,36 @@
 import React from "react";
 import Grid from "@mui/material/Grid";
+import { red, indigo } from "@mui/material/colors";
+import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
+import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Paper,
+  Slide,
+  Typography,
+} from "@mui/material";
+import TicTacToe from "../assets/images/Tic_tac_toe.png";
 import Row from "./Row";
 
 const player1 = "x";
 const player2 = "o";
 
-export default function Area() {
+const Transition = React.forwardRef(function Transition(props, ref) {
+  return <Slide direction="down" ref={ref} {...props} />;
+});
+
+export default function Area({ setShowPage, players }) {
   const [currentPlayer, SetCurrentPlayer] = React.useState(player1);
   const [match, setMatch] = React.useState(Array(3).fill(Array(3).fill(null)));
   // const [match, setMatch] = useState(Array(9).fill(null));
-  const [gameOver, setGameOver] = React.useState(false)
+  const [gameOver, setGameOver] = React.useState(false);
+  const [winner, setWinner] = React.useState(null);
+  const [toogleDialog, setToogleDialog] = React.useState(true);
 
   const nextPlayer = () => {
     SetCurrentPlayer((prevCurrentPlayer) =>
@@ -73,10 +94,12 @@ export default function Area() {
         ) {
           // jogador que ganhou foi `o`
           console.log("jogador que ganhou foi `o`");
+          setWinner("o");
         } else {
           console.log("jogador que ganhou foi `x`");
+          setWinner("x");
         }
-        setGameOver(true)
+        setGameOver(true);
       } else {
         if (
           match[0][0] !== null &&
@@ -87,12 +110,13 @@ export default function Area() {
           match[1][2] !== null &&
           match[2][0] !== null &&
           match[2][1] !== null &&
-          match[2][2] !== null 
+          match[2][2] !== null
         ) {
           // fim de jogo
           // jogou acabou
           console.log("jogou acabou");
-          setGameOver(true)
+          setWinner("t");
+          setGameOver(true);
         }
       }
     }
@@ -100,23 +124,184 @@ export default function Area() {
     endOfTheGame();
   }, [match]);
 
+  React.useEffect(() => {
+    if (gameOver === true) {
+      setToogleDialog(true);
+    }
+  }, [gameOver]);
+
+  const handleCloseDialog = () => setToogleDialog(false);
+
+  const handleDialogYes = () => {
+    // SetCurrentPlayer(player1)
+
+    let newMatch = [[null, null, null], [null, null, null], [null, null, null]];
+    setMatch(newMatch);
+
+    setGameOver(false);
+    setWinner(null);
+    setToogleDialog(false);
+  };
+
+  const handleDialogNo = () => {
+    SetCurrentPlayer(player1)
+    setMatch(Array(3).fill(Array(3).fill(null)));
+    setGameOver(false);
+    setWinner(null);
+    setToogleDialog(false);
+    setShowPage('Welcome')
+  };
+
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12}>
-        {Array(3)
-          .fill(null)
-          .map((_, ix) => (
-            <Row
-              player={currentPlayer}
-              nextPlayer={nextPlayer}
-              key={ix}
-              line={ix}
-              play={play}
-              status={gameOver}
+    <>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              justifyContent: "center",
+              padding: 20,
+            }}
+          >
+            <img
+              src={TicTacToe}
+              alt="Tic-Tac-Toe"
+              height={60}
+              style={{ paddingRight: 10 }}
             />
-          ))}
+            <Typography
+              variant="h4"
+              component="div"
+              gutterBottom
+              style={{
+                paddingTop: 15,
+                fontWeight: 500,
+              }}
+            >
+              Tic-Tac-Toe
+            </Typography>
+          </div>
+        </Grid>
+
+        <Grid item xs={12}>
+          <Grid
+            container
+            justifyContent="center"
+            spacing={2}
+            style={{ marginBottom: 20 }}
+          >
+            <Grid item sx={5}>
+              <Paper
+                elevation={3}
+                style={{
+                  padding: 20,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                  backgroundColor:
+                    currentPlayer === "x" && !gameOver ? indigo[100] : "white",
+                  opacity: winner === "o" || winner === "t" ? 0.1 : 1,
+                }}
+              >
+                {players.player1}
+                <CloseOutlinedIcon
+                  sx={{ color: indigo[900], ml: 1, my: 0.5, fontSize: 30 }}
+                />
+              </Paper>
+            </Grid>
+            <Grid
+              item
+              sx={2}
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
+                fontWeight: 600,
+              }}
+            >
+              vs
+            </Grid>
+
+            <Grid item sx={5}>
+              <Paper
+                elevation={3}
+                style={{
+                  padding: 20,
+                  display: "flex",
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor:
+                    currentPlayer === "o" && !gameOver ? red[100] : "white",
+                  opacity: winner === "x" || winner === "t" ? 0.1 : 1,
+                }}
+              >
+                <CircleOutlinedIcon
+                  sx={{ color: red[900], mr: 1, my: 0.5, fontSize: 30 }}
+                />
+                {players.player2}
+              </Paper>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          {Array(3)
+            .fill(null)
+            .map((_, ix) => (
+              <Row
+                player={currentPlayer}
+                nextPlayer={nextPlayer}
+                key={ix}
+                line={ix}
+                play={play}
+                status={gameOver}
+              />
+            ))}
+        </Grid>
       </Grid>
-    </Grid>
+
+      <Dialog
+        open={toogleDialog}
+        TransitionComponent={Transition}
+        keepMounted
+        fullWidth={true}
+        maxWidth="sm"
+        onClose={handleCloseDialog}
+        disableEscapeKeyDown
+        onBackdropClick={() => false}
+      >
+        <DialogTitle>Game Over</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            <p>
+              {winner !== "t" ? (
+                <span>Congratulation! </span>
+              ) : (
+                <span>Nobody won, it is a tie!</span>
+              )}
+            </p>
+
+            {winner === "x" ? (
+              <strong>{players.player1}</strong>
+            ) : winner === "o" ? (
+              <strong>{players.player2}</strong>
+            ) : null}
+
+            {winner !== "t" ? <span> you won!</span> : null}
+
+            <div>Do you want to play again?</div>
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleDialogYes}>Yes! Of course</Button>
+          <Button onClick={handleDialogNo}>No, thank you</Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 }
 
