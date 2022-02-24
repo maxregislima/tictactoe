@@ -25,7 +25,6 @@ function PlayersNamePage({ setShowPage, playingMode, SetPlayers }) {
   }, [player1, player2, SetPlayers]);
 
   React.useEffect(() => {
-    console.warn(playingMode);
     if (playingMode === "onePlayer") {
       setPlayer2("Computer");
     }

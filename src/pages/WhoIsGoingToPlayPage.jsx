@@ -58,6 +58,7 @@ function WhoIsGoingToPlayPage({ setShowPage, playingMode, setPlayingMode }) {
             value="onePlayer"
             control={<Radio />}
             label="Player vs Computer"
+            disabled={true}
           />
         </RadioGroup>
         <Button

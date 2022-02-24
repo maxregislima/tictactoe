@@ -5,40 +5,35 @@ import { red, indigo } from "@mui/material/colors";
 import CloseOutlinedIcon from "@mui/icons-material/CloseOutlined";
 import CircleOutlinedIcon from "@mui/icons-material/CircleOutlined";
 
-export default function Row({ player, nextPlayer, line, play, status }) {
+export default function Row({ player, nextPlayer, line, playFn, gameOver, computerMove }) {
   const [labelList, setLabelList] = React.useState(Array(3).fill(null));
 
-  function handleClick(ix) {
+  const handleClick = React.useMemo( () => (column) => {
     const newLabelList = [...labelList];
-    newLabelList[ix] = player;
+    newLabelList[column] = player;
     setLabelList(newLabelList);
-    play({ player, line, column: ix });
+    playFn({
+      player,
+      column,
+      line,
+    });
+
     nextPlayer();
-  }
-
-  // function handleClick(value, ix) {
-  //   const newLabelList = [...labelList];
-  //   newLabelList[ix] = player;
-  //   setLabelList(newLabelList);
-  //   play({ player, position: value });
-  //   nextPlayer();
-  // }
-
-  //  line === 0
-  //  0, 1, 2
-  //  line === 1
-  //  3, 4, 5
-  //  line === 2
-  //  6, 7, 8
+  }, [labelList, line, nextPlayer, playFn, player])
 
   let matrix = [0, 1, 2];
-  // if (line === 0) {
-  //   matrix = [0, 1, 2];
-  // } else if (line === 1) {
-  //   matrix = [3, 4, 5];
-  // } else {
-  //   matrix = [6, 7, 8];
-  // }
+
+  React.useEffect(() => {
+    if (gameOver === true) {
+      setLabelList(Array(3).fill(null));
+    }
+  }, [gameOver]);
+
+  React.useEffect(() => {
+    if (computerMove && line === computerMove?.line) {
+      handleClick(computerMove?.column)
+    }
+  }, [line, computerMove, handleClick])
 
   return (
     <Grid
@@ -64,8 +59,7 @@ export default function Row({ player, nextPlayer, line, play, status }) {
             }}
             variant="outlined"
             onClick={() => handleClick(ix)}
-            // onClick={() => handleClick(value, ix)}
-            disabled={labelList[ix] !== null || status === true}
+            disabled={labelList[ix] !== null || gameOver === true}
           >
             {labelList[ix] !== null ? (
               labelList[ix] === "x" ? (
